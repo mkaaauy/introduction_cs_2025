@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>{% block title %}Игровые новости{% endblock %}</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --bg-card: #111111;
+      --bg-input: #1a1a1a;
+      --text: #ffffff;
+      --muted: #a8a8a8;
+      --border: #2a2a2a;
+      --link: #ffffff;
+      --link-hover: #60a5fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+    .tagline {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { color: var(--link-hover); text-decoration: underline; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    input, select {
+      font: inherit;
+      padding: 0.45rem 0.7rem;
+      border: 1px solid #d4d4d4;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #000000;
+      color-scheme: light;
+    }
+    input::placeholder { color: #737373; }
+    input[type="search"] {
+      flex: 1;
+      min-width: 140px;
+    }
+    input[type="search"]:focus,
+    select:focus {
+      outline: 2px solid #e5e5e5;
+      border-color: #a3a3a3;
+    }
+    select {
+      cursor: pointer;
+    }
+    select option {
+      background: #ffffff;
+      color: #000000;
+    }
+    select option:checked,
+    select option:hover {
+      background: #e5e5e5;
+      color: #000000;
+    }
+    .btn {
+      cursor: pointer;
+      font: inherit;
+      font-weight: 600;
+      padding: 0.45rem 0.85rem;
+      border: none;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #000000;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn:hover {
+      background: #e5e5e5;
+      transform: translateY(-1px);
+    }
+    .btn:active { transform: translateY(0); }
+    .articles { list-style: none; }
+    .article {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 1.1rem;
+      margin-bottom: 0.65rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .article-thumb-link {
+      flex-shrink: 0;
+      display: block;
+      line-height: 0;
+    }
+    .article-thumb {
+      width: 120px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: #1a1a1a;
+    }
+    .article-body { flex: 1; min-width: 0; }
+    .article-title {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #ffffff;
+    }
+    .article-title:hover {
+      color: var(--link-hover);
+      text-decoration: none;
+    }
+    .meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .summary {
+      font-size: 0.9rem;
+      color: #d4d4d4;
+      margin-top: 0.5rem;
+    }
+    .empty {
+      color: var(--muted);
+      padding: 2rem 0;
+      text-align: center;
+    }
+    .empty code {
+      background: var(--bg-input);
+      color: #ffffff;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.85em;
+    }
+    .flash {
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #ffffff;
+      font-weight: 500;
+    }
+    .flash-success { background: #16a34a; }
+    .flash-info { background: #2563eb; }
+    .flash-warning { background: #ea580c; }
+    .flash-error { background: #dc2626; }
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+    }
+    .pagination a {
+      color: #000000;
+      background: #ffffff;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .pagination a:hover {
+      background: #e5e5e5;
+      color: #000000;
+      text-decoration: none;
+    }
+    .pagination-info { color: var(--muted); }
+    .pagination-disabled { color: #555; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><a href="{% url 'article_list' %}" style="color:inherit;text-decoration:none;">Игровые новости</a></h1>
+    <p class="tagline">Игры · драйверы · железо · производители</p>
+    {% block header_extra %}{% endblock %}
+  </header>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="flash flash-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  <main>{% block content %}{% endblock %}</main>
+</body>
+</html>

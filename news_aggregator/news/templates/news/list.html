@@ -1,0 +1,70 @@
+{% extends "news/base.html" %}
+
+{% block header_extra %}
+<form class="toolbar" method="get" action="">
+  <input type="search" name="q" value="{{ query }}" placeholder="Поиск">
+  <select name="source" onchange="this.form.submit()">
+    <option value="">Все источники</option>
+    {% for source in sources %}
+      <option value="{{ source.id }}" {% if selected_source == source.id|stringformat:"s" %}selected{% endif %}>
+        {{ source.name }}
+      </option>
+    {% endfor %}
+  </select>
+  <select name="period" onchange="this.form.submit()">
+    {% for value, label in period_choices %}
+      <option value="{{ value }}" {% if selected_period == value %}selected{% endif %}>
+        {{ label }}
+      </option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn">Найти</button>
+</form>
+<form class="toolbar" method="post" action="{% url 'refresh_feeds' %}">
+  {% csrf_token %}
+  <button type="submit" class="btn">Обновить</button>
+</form>
+{% endblock %}
+
+{% block content %}
+{% if articles %}
+<ul class="articles">
+  {% for article in articles %}
+  <li class="article">
+    {% if article.image_url %}
+    <a class="article-thumb-link" href="{{ article.link }}" target="_blank" rel="noopener">
+      <img class="article-thumb" src="{{ article.image_url }}" alt="" loading="lazy">
+    </a>
+    {% endif %}
+    <div class="article-body">
+      <a class="article-title" href="{{ article.link }}" target="_blank" rel="noopener">
+        {{ article.title }}
+      </a>
+      <div class="meta">
+        {{ article.source.name }}
+        {% if article.published_at %} · {{ article.published_at|date:"d.m.Y H:i" }}{% endif %}
+      </div>
+      {% if article.summary %}
+      <p class="summary">{{ article.summary|truncatechars:200 }}</p>
+      {% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+
+{% if page_obj.has_other_pages %}
+<nav class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}{% if query_string %}&amp;{{ query_string }}{% endif %}">Назад</a>
+  {% endif %}
+  <span class="pagination-info">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}{% if query_string %}&amp;{{ query_string }}{% endif %}">Вперед</a>
+  {% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<p class="empty">Новостей пока нет. Нажмите «Обновить».</p>
+{% endif %}
+{% endblock %}
